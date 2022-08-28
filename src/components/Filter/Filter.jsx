@@ -1,15 +1,24 @@
-import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
 import { nanoid } from 'nanoid';
 import { Label, Input } from './Filter.styled';
+import { changeFilter, getFilter } from 'redux/contactsSlice';
 
-export const Filter = ({ value, onChange }) => {
+export const Filter = () => {
   const filterInputId = nanoid();
+
+  const dispatch = useDispatch();
+  const filterSearch = useSelector(getFilter);
+
+  const changeFilterSearch = event => {
+    dispatch(changeFilter(event.currentTarget.value));
+  };
+
   return (
     <Label htmlFor={filterInputId}>
       Find contacts by name
       <Input
-        value={value}
-        onChange={onChange}
+        value={filterSearch}
+        onChange={changeFilterSearch}
         id={filterInputId}
         type="text"
         name="filter"
@@ -19,9 +28,4 @@ export const Filter = ({ value, onChange }) => {
       />
     </Label>
   );
-};
-
-Filter.propTypes = {
-  value: PropTypes.string,
-  onChange: PropTypes.func.isRequired,
 };

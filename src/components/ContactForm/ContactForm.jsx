@@ -1,14 +1,18 @@
 import { useState, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { nanoid } from 'nanoid';
-import PropTypes from 'prop-types';
 import { Form, Label, Input, Button } from './ContactForm.styled';
+import { addContact, getContacts } from 'redux/contactsSlice';
 
-export default function ContactForm({ onSubmit }) {
+export default function ContactForm() {
   const nameInputId = useMemo(() => nanoid(), []);
   const numberInputId = useMemo(() => nanoid(), []);
 
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+
+  const dispatch = useDispatch();
+  const contacts = useSelector(getContacts);
 
   const handleInputChange = event => {
     const { name, value } = event.currentTarget;
@@ -25,7 +29,6 @@ export default function ContactForm({ onSubmit }) {
         return;
     }
   };
-
   const formReset = () => {
     setName('');
     setNumber('');
@@ -34,12 +37,21 @@ export default function ContactForm({ onSubmit }) {
   const handleSubmit = event => {
     event.preventDefault();
 
-    onSubmit(name, number); /* даем доступ к state в App */
+    const newContact = {
+      id: nanoid(),
+      name: name,
+      number: number,
+    };
+
+    contacts.find(contact => contact.name.toLowerCase() === name.toLowerCase())
+      ? alert(`${name} is already in contacts`)
+      : dispatch(addContact(newContact));
+
     formReset();
   };
 
   return (
-    <Form action="" onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit}>
       <Label htmlFor={nameInputId}>
         Name
         <Input
@@ -70,69 +82,3 @@ export default function ContactForm({ onSubmit }) {
     </Form>
   );
 }
-
-ContactForm.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-};
-
-// handleNameChange = event => {
-//   console.log(event.currentTarget.value);
-//   this.setState({ name: event.currentTarget.value });
-// };
-
-// handleNumberChange = event => {
-//   this.setState({ number: event.currentTarget.value });
-// };
-
-// handleInputChange = event => {
-//   const { name, value } = event.currentTarget;
-//   this.setState({
-//     [name]: value,
-//   });
-// };
-
-// handleSubmit = event => {
-//   event.preventDefault();
-
-//   this.props.onSubmit(this.state); /* даем доступ к state в App */
-//   this.formReset();
-// };
-
-// formReset = () => {
-//   this.setState({ name: '', number: '' });
-// };
-
-//   render() {
-//     return (
-//       <Form action="" onSubmit={this.handleSubmit}>
-//         <Label htmlFor={this.nameInputId}>
-//           Name
-//           <Input
-//             value={this.state.name}
-//             onChange={this.handleInputChange}
-//             id={this.nameInputId}
-//             type="text"
-//             name="name"
-//             pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-//             title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-//             required
-//           />
-//         </Label>
-//         <Label htmlFor={this.numberInputId}>
-//           Number
-//           <Input
-//             value={this.state.number}
-//             onChange={this.handleInputChange}
-//             id={this.numberInputId}
-//             type="tel"
-//             name="number"
-//             pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-//             title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-//             required
-//           />
-//         </Label>
-//         <Button type="submit">Add contact</Button>
-//       </Form>
-//     );
-//   }
-// }
