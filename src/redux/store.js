@@ -12,7 +12,7 @@ import { contactsReducer, filterSlice } from './contactsSlice';
 
 export const store = configureStore({
   reducer: {
-    items: contactsReducer,
+    contacts: contactsReducer,
     filter: filterSlice.reducer,
   },
   middleware(getDefaultMiddleware) {
